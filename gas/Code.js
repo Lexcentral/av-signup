@@ -119,6 +119,16 @@ function addSignup({ id, date, job, name }) {
 // ── Email ──────────────────────────────────────────────────────────────────
 // Run createEmailTrigger() once from the editor to schedule Tuesday + Friday sends.
 
+// Run from the editor to preview the email as yourself.
+function sendTestEmail() {
+  const { slots } = getScheduleData();
+  MailApp.sendEmail({
+    to: 'aaron@aaronaustin.com',
+    subject: '[TEST] AV Signups',
+    htmlBody: buildEmailHtml('Aaron Austin', slots),
+  });
+}
+
 function createEmailTrigger() {
   ScriptApp.getProjectTriggers()
     .filter(t => t.getHandlerFunction() === 'sendSignupEmails')
