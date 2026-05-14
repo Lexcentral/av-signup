@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AV Signup — Lex Central</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #068ccd;
+      color: #fff;
+      padding: 18px 20px;
+      text-align: center;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; }
+    .header p  { font-size: 14px; opacity: 0.85; margin-top: 3px; }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* ── Name field ── */
+    .name-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .name-section label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .name-section input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .name-section input:focus { border-color: #068ccd; }
+    .name-section input.error  { border-color: #e74c3c; }
+
+    /* ── Status / loading ── */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+      font-size: 15px;
+    }
+    .error-msg {
+      background: #fff3f3;
+      border: 1px solid #f5c6c6;
+      border-radius: 8px;
+      padding: 16px;
+      color: #c0392b;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Date card ── */
+    .date-card {
+      background: #fff;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .date-header {
+      background: #f0f4f8;
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border-bottom: 1px solid #e0e7ef;
+    }
+
+    /* ── Slot row ── */
+    .slot-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f4f8;
+      gap: 12px;
+    }
+    .slot-row:last-child { border-bottom: none; }
+    .slot-row.highlighted { background: #eef7ff; }
+
+    .slot-info { flex: 1; min-width: 0; }
+    .slot-job {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+    }
+    .slot-volunteer {
+      font-size: 16px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .slot-volunteer.open   { color: #0fa481; font-weight: 600; }
+    .slot-volunteer.filled { color: #333; }
+
+    /* ── Buttons ── */
+    .btn-signup {
+      flex-shrink: 0;
+      background: #068ccd;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-signup:hover    { background: #057ab5; }
+    .btn-signup:disabled { background: #aaa; cursor: default; }
+
+    .tag-filled {
+      flex-shrink: 0;
+      font-size: 13px;
+      color: #888;
+      background: #eee;
+      border-radius: 4px;
+      padding: 5px 10px;
+      white-space: nowrap;
+    }
+
+    /* ── Inline confirm ── */
+    .confirm-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 10px 16px;
+      background: #f8fbff;
+      border-top: 1px solid #e0e7ef;
+      font-size: 14px;
+      color: #555;
+    }
+    .confirm-row .label { flex: 1; }
+    .btn-confirm {
+      background: #068ccd;
+      color: #fff;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-confirm:disabled { background: #aaa; cursor: default; }
+    .btn-cancel {
+      background: none;
+      border: 1px solid #ccc;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #555;
+      white-space: nowrap;
+    }
+
+    .tag-success {
+      flex-shrink: 0;
+      font-size: 13px;
+      color: #0fa481;
+      font-weight: 600;
+      background: #eafaf5;
+      border-radius: 4px;
+      padding: 5px 10px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>AV Signup</h1>
+    <p>Lex Central Church</p>
+  </div>
+
+  <div class="container">
+    <div class="name-section">
+      <label for="name-input">Your Name</label>
+      <input id="name-input" type="text" placeholder="Enter your name" autocomplete="name" spellcheck="false">
+    </div>
+
+    <div id="status" class="loading">Loading schedule…</div>
+    <div id="schedule"></div>
+  </div>
+
+  <script>
+    // Set this to the deployed GAS web app URL after deploying from the Apps Script editor.
+    const GAS_URL = 'REPLACE_WITH_DEPLOYED_WEB_APP_URL';
+
+    const params      = new URLSearchParams(location.search);
+    const prefilledId = params.get('id')   || '';
+    const nameInput   = document.getElementById('name-input');
+    const statusEl    = document.getElementById('status');
+    const scheduleEl  = document.getElementById('schedule');
+
+    if (params.get('name')) nameInput.value = params.get('name');
+
+    // ── Data ──────────────────────────────────────────────────────────────
+
+    let slots = [];
+
+    async function loadSchedule() {
+      statusEl.className = 'loading';
+      statusEl.textContent = 'Loading schedule…';
+      statusEl.style.display = '';
+      scheduleEl.innerHTML = '';
+      try {
+        const r = await fetch(`${GAS_URL}?action=schedule`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        slots = data.slots || [];
+        renderSchedule();
+        statusEl.style.display = 'none';
+        if (prefilledId) scrollToSlot(prefilledId);
+      } catch (err) {
+        statusEl.className = 'error-msg';
+        statusEl.textContent = 'Could not load the schedule. Please try again later.';
+        console.error(err);
+      }
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────
+
+    function renderSchedule() {
+      const byDate = {};
+      slots.forEach(slot => {
+        if (!byDate[slot.iso]) byDate[slot.iso] = { label: slot.label, slots: [] };
+        byDate[slot.iso].slots.push(slot);
+      });
+
+      scheduleEl.innerHTML = '';
+
+      if (!Object.keys(byDate).length) {
+        scheduleEl.innerHTML = '<p style="color:#888;text-align:center;padding:32px">No upcoming services found.</p>';
+        return;
+      }
+
+      Object.values(byDate).forEach(({ label, slots: dateSlots }) => {
+        const card   = document.createElement('div');
+        card.className = 'date-card';
+
+        const header = document.createElement('div');
+        header.className = 'date-header';
+        header.textContent = label;
+        card.appendChild(header);
+
+        dateSlots.forEach(slot => card.appendChild(buildSlotBlock(slot)));
+        scheduleEl.appendChild(card);
+      });
+    }
+
+    function buildSlotBlock(slot) {
+      const block = document.createElement('div');
+      block.id = `slot-${slot.id}`;
+
+      const row = document.createElement('div');
+      row.className = 'slot-row' + (slot.id === prefilledId ? ' highlighted' : '');
+
+      const info = document.createElement('div');
+      info.className = 'slot-info';
+
+      const job = document.createElement('div');
+      job.className = 'slot-job';
+      job.textContent = slot.job;
+
+      const vol = document.createElement('div');
+      vol.className = 'slot-volunteer ' + (slot.volunteer ? 'filled' : 'open');
+      vol.textContent = slot.volunteer || 'Open';
+
+      info.append(job, vol);
+      row.appendChild(info);
+
+      if (slot.volunteer) {
+        const tag = document.createElement('span');
+        tag.className = 'tag-filled';
+        tag.textContent = 'Filled';
+        row.appendChild(tag);
+      } else {
+        const btn = document.createElement('button');
+        btn.className = 'btn-signup';
+        btn.textContent = 'Sign Up';
+        btn.onclick = () => showConfirm(slot, block, row, btn, vol);
+        row.appendChild(btn);
+      }
+
+      block.appendChild(row);
+      return block;
+    }
+
+    // ── Confirm / submit ──────────────────────────────────────────────────
+
+    function showConfirm(slot, block, row, signupBtn, volEl) {
+      const name = nameInput.value.trim();
+      if (!name) {
+        nameInput.classList.add('error');
+        nameInput.focus();
+        setTimeout(() => nameInput.classList.remove('error'), 2000);
+        return;
+      }
+
+      // Toggle off if already open
+      const existing = block.querySelector('.confirm-row');
+      if (existing) { existing.remove(); signupBtn.disabled = false; return; }
+
+      signupBtn.disabled = true;
+
+      const confirmRow = document.createElement('div');
+      confirmRow.className = 'confirm-row';
+
+      const lbl = document.createElement('span');
+      lbl.className = 'label';
+      lbl.innerHTML = `Sign up as <strong>${escHtml(name)}</strong>?`;
+
+      const confirmBtn = document.createElement('button');
+      confirmBtn.className = 'btn-confirm';
+      confirmBtn.textContent = 'Confirm';
+      confirmBtn.onclick = () => submitSignup(slot, name, block, row, signupBtn, volEl, confirmRow, confirmBtn);
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn-cancel';
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.onclick = () => { confirmRow.remove(); signupBtn.disabled = false; };
+
+      confirmRow.append(lbl, confirmBtn, cancelBtn);
+      block.appendChild(confirmRow);
+    }
+
+    async function submitSignup(slot, name, block, row, signupBtn, volEl, confirmRow, confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Signing up…';
+      try {
+        const r = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'signup', id: slot.id, date: slot.iso, job: slot.job, name }),
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        if (data.ok) {
+          slot.volunteer = name;
+          confirmRow.remove();
+          volEl.className = 'slot-volunteer filled';
+          volEl.textContent = name;
+          const tag = document.createElement('span');
+          tag.className = 'tag-success';
+          tag.textContent = 'Signed up!';
+          signupBtn.replaceWith(tag);
+        } else {
+          confirmRow.innerHTML = `<span style="color:#c0392b;flex:1">${escHtml(data.error || 'Sign up failed.')}</span>`;
+          signupBtn.disabled = false;
+          setTimeout(loadSchedule, 2500);
+        }
+      } catch (err) {
+        confirmRow.innerHTML = '<span style="color:#c0392b;flex:1">Network error. Please try again.</span>';
+        signupBtn.disabled = false;
+      }
+    }
+
+    function scrollToSlot(id) {
+      const el = document.getElementById(`slot-${id}`);
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 400);
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    loadSchedule();
+  </script>
+
+</body>
+</html>
